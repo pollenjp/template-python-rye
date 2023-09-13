@@ -1,6 +1,5 @@
 # Standard Library
 import typing as t
-import uuid
 from pathlib import Path
 
 # Third Party Library
@@ -34,7 +33,6 @@ def install_requirements(session: Session, dev: bool = False) -> None:
 def load_requirements_dict(dev: bool = False) -> dict[str, str]:
     requirements_txt = Path(f"requirements{'-dev' if dev else ''}.lock")
     requirements_dict = {}
-    # requirements.txtファイルを開く
     with open(requirements_txt, "rt") as file:
         for line in file:
             line = line.strip()
@@ -52,9 +50,9 @@ def format(session: Session) -> None:
     kwargs: SessionKwargs = {"env": env, "success_codes": [0, 1]}
 
     install_requirements(session)
-    requirements_dict = load_requirements_dict()
-    packages = ["autoflake", "isort", "black"]
-    session.install(*[f"{package}=={requirements_dict[package]}" for package in packages])
+    requirements_dev_dict = load_requirements_dict(dev=True)
+    packages = ["autoflake8", "isort", "black"]
+    session.install(*[f"{package}=={requirements_dev_dict[package]}" for package in packages])
     session.run(
         "autoflake8",
         "--in-place",
@@ -75,10 +73,8 @@ def lint(session: Session) -> None:
     env.update(env_common)
     kwargs: SessionKwargs = {"env": env}
 
-    install_requirements(session)
-    requirements_dict = load_requirements_dict()
-    packages = ["flake8", "autoflake", "isort", "black", "mypy"]
-    session.install(*[f"{package}=={requirements_dict[package]}" for package in packages])
+    install_requirements(session, dev=True)  # mypy may require dev packages
+
     session.run("flake8", "--statistics", "--count", "--show-source", *python_code_path_list, **kwargs)
     session.run("autoflake8", "--check", "--recursive", "--remove-unused-variables", *python_code_path_list, **kwargs)
     session.run("isort", "--check", *python_code_path_list, **kwargs)
@@ -93,5 +89,8 @@ def test(session: Session) -> None:
     kwargs: SessionKwargs = {"env": env}
 
     install_requirements(session)
-    session.install("--upgrade", "pytest")
+    requirements_dev_dict = load_requirements_dict(dev=True)
+    packages = ["pytest"]
+    session.install(*[f"{package}=={requirements_dev_dict[package]}" for package in packages])
+
     session.run("pytest", **kwargs)

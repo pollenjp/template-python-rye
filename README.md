@@ -3,6 +3,7 @@
 ## Steps
 
 ```sh
+rye pin 3.11
 rye init
 ```
 
@@ -36,7 +37,7 @@ import_heading_localfolder = "Local Library"
 python_version = "3.11"
 strict = true
 
-disallow_any_expr = true
+# disallow_any_expr = true
 disallow_any_decorated = true
 disallow_any_explicit = true
 disallow_any_unimported = true
