@@ -7,18 +7,61 @@ rye pin 3.11
 rye init
 ```
 
-Edit `pyproject.toml`
+## Edit `pyproject.toml` as needed.
+
+### hatching
+
+Default. No need to edit.
+
+### setuptools
+
+<https://setuptools.pypa.io/en/latest/userguide/package_discovery.html>
 
 ```toml
-[package]
-name = "sample-package"
-...
-packages = [
-    {include = "sample_package", from = "src"}
-]
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 ```
 
-config
+```toml
+[tool.setuptools]
+packages = ["<your_package_name>"]
+```
+
+```toml
+[tool.setuptools.package-dir]
+"" = "src"
+```
+
+sample 1
+
+```toml
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["hoge"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+```
+
+sample 2
+
+```toml
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ansiblelint.rules.custom.ansible_lint_custom_strict_naming"]
+
+[tool.setuptools.package-dir]
+"ansiblelint.rules.custom.ansible_lint_custom_strict_naming" = "src/rules"
+```
+
+### Linter and Formatter
 
 ```toml
 [tool.black]
@@ -62,7 +105,7 @@ testpaths = "test"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 ```
 
-Add developer tools
+## Add developer tools
 
 ```sh
 rye add --dev \
@@ -75,7 +118,7 @@ rye add --dev \
     pytest
 ```
 
-check your python version and update some config
+## Check your python version and update some config
 
 - `noxfile.py`
   - directory
